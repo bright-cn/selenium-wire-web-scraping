@@ -1,6 +1,6 @@
 # 使用 Selenium Wire 进行 Python 网络爬虫
 
-[![推广图](https://github.com/luminati-io/LinkedIn-Scraper/raw/main/Proxies%20and%20scrapers%20GitHub%20bonus%20banner.png)](https://www.bright.cn/)
+[![推广图](https://github.com/bright-cn/LinkedIn-Scraper/raw/main/Proxies%20and%20scrapers%20GitHub%20bonus%20banner.png)](https://www.bright.cn/)
 
 本指南介绍了如何在 Python 中使用 Selenium Wire 进行网络爬虫，并涵盖诸如拦截请求和动态代理轮换等主题。
 
