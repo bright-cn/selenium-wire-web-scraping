@@ -1,98 +1,97 @@
-# 使用 Selenium Wire 进行 Python 网络爬虫
+# 使用 Selenium Wire 在 Python 中进行网页爬虫
 
-[![推广图](https://github.com/bright-cn/LinkedIn-Scraper/raw/main/Proxies%20and%20scrapers%20GitHub%20bonus%20banner.png)](https://www.bright.cn/)
+[![推广](https://github.com/bright-cn/Awesome-Web-Scraping/raw/main/Proxies%20and%20scrapers%20GitHub%20bonus%20banner%20CN.png)](https://www.bright.cn/) 
 
-本指南介绍了如何在 Python 中使用 Selenium Wire 进行网络爬虫，并涵盖诸如拦截请求和动态代理轮换等主题。
+本指南介绍如何使用 Selenium Wire 进行网页爬虫，并涵盖请求拦截和动态代理轮换等主题。
 
 - [什么是 Selenium Wire？](#什么是-selenium-wire)
 - [为什么使用 Selenium Wire？](#为什么使用-selenium-wire)
 - [Selenium Wire 的主要功能](#selenium-wire-的主要功能)
-    - [访问请求与响应](#访问请求与响应)
-    - [拦截请求与响应](#拦截请求与响应)
+    - [访问请求和响应](#访问请求和响应)
+    - [拦截请求和响应](#拦截请求和响应)
     - [WebSocket 监控](#websocket-监控)
     - [管理代理](#管理代理)
-- [在 Selenium Wire 中进行代理轮换](#在-selenium-wire-中进行代理轮换)
-    - [环境要求](#环境要求)
-    - [步骤 1：随机选择代理](#步骤-1随机选择代理)
-    - [步骤 2：设置代理](#步骤-2设置代理)
-    - [步骤 3：访问目标页面](#步骤-3访问目标页面)
-    - [步骤 4：整合所有步骤](#步骤-4整合所有步骤)
-- [使用 Bright Data 代理进行代理轮换](#使用-bright-data-代理进行代理轮换)
-- [Selenium 与 Selenium Wire 在爬虫中的对比](#selenium-与-selenium-wire-在爬虫中的对比)
-- [结论](#结论)
+- [Selenium Wire 中的代理轮换](#selenium-wire-中的代理轮换)
+    - [要求](#要求)
+    - [第 1 步：随机选择代理](#第-1-步随机选择代理)
+    - [第 2 步：设置代理](#第-2-步设置代理)
+    - [第 3 步：访问目标页面](#第-3-步访问目标页面)
+    - [第 4 步：整合所有代码](#第-4-步整合所有代码)
+- [使用 Bright Data 代理轮换代理](#更好的代理轮换方法bright-data-代理)
+- [用于网页爬虫时 Selenium 与 Selenium Wire 的对比](#用于网页爬虫时-selenium-与-selenium-wire-的对比)
+- [总结](#总结)
 
 ## 什么是 Selenium Wire？
 
-[Selenium Wire](https://github.com/wkeeling/selenium-wire) 是 Selenium Python 绑定的一个扩展，能够对浏览器请求进行控制。它允许直接在使用 Selenium 的同时，从 Python 代码中实时拦截并修改请求与响应。
+[Selenium Wire](https://github.com/wkeeling/selenium-wire) 是 Selenium Python 绑定的扩展，可用于控制浏览器请求。使用 Selenium 时，它允许你直接通过 Python 代码实时拦截和修改请求与响应。
 
-> **注意**：  
-> 该库目前已停止维护，但依然有不少爬虫技术和脚本在使用。
+> **注意**：\
+> 该库已停止维护，但一些抓取技术和脚本仍在使用它。
 
 ## 为什么使用 Selenium Wire？
 
-传统浏览器具有某些限制，这使得网络爬虫变得较为困难。例如，它们无法在运行时设置带有验证信息的代理 URL，也无法在不重启浏览器的情况下进行 [代理轮换](https://www.bright.cn/solutions/rotating-proxies)。Selenium Wire 通过模拟真实用户的操作来帮助你克服这些限制。
+浏览器存在一些限制，可能会增加网页爬虫的难度。例如，浏览器无法让你设置需要身份验证的代理 URL，也无法即时[轮换代理](https://www.bright.cn/solutions/rotating-proxies)。Selenium Wire 通过像普通用户一样与网站交互，帮助你克服这些限制。
 
-以下是使用 Selenium Wire 进行网络爬虫的一些理由：
+以下是你应使用 Selenium Wire 进行网页爬虫的一些原因：
 
-- **直接访问网络流量**：可以分析、监控并修改 AJAX 请求和响应，从而高效提取有价值的数据。  
-- **规避反爬虫检测**：  
-  [`ChromeDriver`](https://developer.chrome.com/docs/chromedriver/downloads?hl=en) 会暴露一些可用于反爬虫系统检测的可识别信息。诸如 `undetected-chromedriver` 等技术依托 Selenium Wire 来对这些信息进行伪装，从而绕过检测机制。  
-- **增强浏览器灵活性**：传统浏览器依赖固定的启动配置，修改时需要重启。Selenium Wire 能够在会话中实时更新请求头和代理设置，完美适用于动态网络爬虫场景。
+- **直接访问网络流量**：分析、监控和修改 AJAX 请求与响应，从而高效提取有价值的数据。
+- **规避反机器人检测**：[`ChromeDriver`](https://developer.chrome.com/docs/chromedriver/downloads?hl=en) 会暴露反机器人系统用于检测的可识别信息。`undetected-chromedriver` 等技术利用 Selenium Wire 隐藏这些信息并绕过检测机制。
+- **增强浏览器灵活性**：传统浏览器依赖固定的启动配置，如需修改则必须重启。Selenium Wire 支持在活动会话中实时更新请求标头和代理设置，因此是动态网页爬虫的理想解决方案。
 
 ## Selenium Wire 的主要功能
 
-### 访问请求与响应
+### 访问请求和响应
 
-Selenium Wire 可以监控并捕获浏览器的 HTTP/HTTPS 网络流量，提供对以下关键属性的访问：
+Selenium Wire 允许你监控和捕获浏览器的 HTTP/HTTPS 流量，并访问以下关键属性：
 
-| **属性** | **描述** |
+| **属性** | **说明** |
 | --- | --- |
-| `driver.requests` | 以时间顺序返回捕获的请求列表 |
-| `driver.last_request` | 返回最近捕获的请求 <br>（比 `driver.requests[-1]` 更高效） |
-| `driver.wait_for_request(pat, timeout=10)` | 等待（时间由 `timeout` 参数定义）直到检测到与 `pat` 匹配（可为子字符串或[正则表达式](https://www.bright.cn/blog/web-data/web-scraping-with-regex)）的请求 |
-| `driver.har` | 一个 JSON 格式的 [HAR](https://docs.brightdata.com/api-reference/proxy-manager/get_har_logs)（HTTP Archive）日志，包含所有 HTTP 事务 |
-| `driver.iter_requests()` | 返回一个可迭代对象，遍历捕获到的请求 |
+| `driver.requests` | 按时间顺序返回捕获的请求列表 |
+| `driver.last_request` | 返回最近捕获的请求 <br>（这比使用 `driver.requests[-1]` 更高效） |
+| `driver.wait_for_request(pat, timeout=10)` | 此方法将等待（等待时间由 `timeout` 参数定义），直到发现与 `pat` 参数所定义模式匹配的请求。该模式可以是子字符串或[正则表达式](https://www.bright.cn/blog/web-data/web-scraping-with-regex)。 |
+| `driver.har` | 以 JSON 格式提供已发生 HTTP 事务的 [HAR](https://docs.brightdata.com/api-reference/proxy-manager/get_har_logs) 归档。 |
+| `driver.iter_requests()` | 返回已捕获请求的迭代器。 |
 
-Selenium Wire 的 `Request` 对象包含以下属性：
+Selenium Wire `Request` 对象具有以下属性：
 
-| **属性** | **描述** |
+| **属性** | **说明** |
 | --- | --- |
-| `body` | 请求体以 `bytes` 形式呈现。如果请求无请求体则为 `b''` |
-| `cert` | 以字典形式返回服务器 SSL 证书信息（非 HTTPS 请求时为空） |
-| `date` | 请求发起的时间（datetime） |
-| `headers` | 以类字典（case-insensitive）的方式返回请求头，允许重复键 |
-| `host` | 返回请求的主机（例如 `https://brightdata.com/`） |
-| `method` | 请求方法（GET、POST 等） |
-| `params` | 返回请求参数组成的字典（若同名参数多次出现，则字典中的值为列表） |
-| `path` | 返回请求路径 |
-| `querystring` | 返回查询字符串 |
-| `response` | 返回与该请求对应的响应对象（若无响应则为 `None`） |
-| `url` | 返回完整的请求 URL，包含 `host`、`path` 和 `querystring` |
-| `ws_messages` | 若请求为 WebSocket（URL 通常是 `wss://`），则 `ws_messages` 会包含所有发送和接收的消息 |
+| `body` | 请求正文以 `bytes` 形式提供。如果请求没有正文，`body` 的值将为空（例如：`b''`）。 |
+| `cert` | 以字典格式返回服务器 SSL 证书的信息（对于非 HTTPS 请求，该字典为空）。 |
+| `date` | 显示发出请求的日期和时间。 |
+| `headers` | 返回类似字典的请求标头对象（请注意，Selenium Wire 中的标头不区分大小写，并且允许重复）。 |
+| `host` | 返回请求主机（例如，`https://www.bright.cn/`）。 |
+| `method` | 指定 HTTP 方法（`GET`、`POST` 等）。 |
+| `params` | 返回请求参数的字典（请注意，如果请求中多次出现同名参数，则其在字典中的值将是一个列表）。 |
+| `path` | 返回请求路径。 |
+| `querystring` | 返回查询字符串。 |
+| `response` | 返回与请求关联的响应对象（请注意，如果请求没有响应，其值将为 `None`）。 |
+| `url` | 返回包含 `host`、`path` 和 `querystring` 的完整请求 URL。 |
+| `ws_messages` | 如果请求是 WebSocket（在这种情况下，URL 通常类似于 `wss://`），则 `ws_messages` 将包含已发送和接收的所有 WebSocket 消息。 |
 
-而 `Response` 对象则具有下列属性：
+而 `Response` 对象会公开以下属性：
 
-| **属性** | **描述** |
+| **属性** | **说明** |
 | --- | --- |
-| `body` | 响应体以 `bytes` 形式呈现。如果响应无响应体则为 `b''` |
-| `date` | 响应接收的时间（datetime） |
-| `headers` | 以类字典（case-insensitive）的方式返回响应头，允许重复键 |
-| `reason` | 返回响应的文本原因，如 `OK`、`Not Found` 等 |
-| `status_code` | 返回响应的状态码，如 `200`、`404` 等 |
+| `body` | 响应正文以 `bytes` 形式提供。如果响应没有正文，`body` 的值将为空（例如：`b''`）。 |
+| `date` | 显示收到响应的日期和时间。 |
+| `headers` | 返回类似字典的响应标头对象（请注意，Selenium Wire 中的标头不区分大小写，并且允许重复）。 |
+| `reason` | 返回响应的原因短语，例如 `OK`、`Not Found` 等。 |
+| `status_code` | 返回响应状态，例如 `200`、`404` 等。 |
 
-下面是一个测试此功能的示例 Python 脚本：
+让我们编写一个 Python 脚本来测试此功能：
 
 ```python
 from seleniumwire import webdriver
 
-# 使用 Selenium Wire 初始化 WebDriver
+# Initialize the WebDriver with Selenium Wire
 driver = webdriver.Chrome()
 
 try:
-    # 打开目标网站
+    # Open the target website
     driver.get("https://brightdata.com/")
 
-    # 获取并打印所有捕获的请求
+    # Access and print all captured requests
     for request in driver.requests:
         print(f"URL: {request.url}")
         print(f"Method: {request.method}")
@@ -101,96 +100,97 @@ try:
         print("-" * 50)
 
 finally:
-    # 关闭浏览器
+    # Close the browser
     driver.quit()
 ```
 
-该代码打开目标网站并通过 `driver.requests` 捕获请求。随后，在循环中打印了一些请求属性，如 `url`、`method` 和 `headers`。
+此代码打开目标网站，并使用 `driver.requests` 捕获请求。随后，它通过 for 循环拦截 `url`、`method` 和 `headers` 等请求属性。
 
-下面是可能得到的部分结果示例：
+预期结果如下：
 
-![部分请求日志](https://github.com/bright-cn/selenium-wire-web-scraping/blob/main/Images/image-98-1024x597.png)
+![部分已记录的请求](https://github.com/bright-cn/selenium-wire-web-scraping/blob/main/Images/image-98-1024x597.png)
 
-### 拦截请求与响应
+### 拦截请求和响应
 
-Selenium Wire 可以使用拦截器（interceptors）拦截并修改请求或响应，这些拦截器会在浏览器网络流量通过时被触发。
 
-拦截器有以下两种：
+Selenium Wire 支持使用拦截器拦截和修改请求与响应。拦截器是网络流量通过浏览器时触发的函数。
 
-- `driver.request_interceptor`：拦截请求，接受单个参数（request）  
-- `driver.response_interceptor`：拦截响应，接受两个参数：一个是源请求（request），一个是响应（response）
+有两种独立的拦截器：
 
-下面展示一个在请求阶段使用拦截器的示例：
+* `driver.request_interceptor`：拦截请求并接受一个参数。
+* `driver.response_interceptor`：拦截响应并接受两个参数，一个用于原始请求，另一个用于响应。
+
+以下示例展示了如何使用请求拦截器：
 
 ```python
 from seleniumwire import webdriver
 
-# 定义请求拦截器函数
+# Define the request interceptor function
 def interceptor(request):
-    # 给所有出站请求添加自定义请求头
+    # Add a custom header to all requests
     request.headers["X-Test-Header"] = "MyCustomHeaderValue"
 
-    # 阻断目标域名为 example.com 的请求
+    # Block requests to a specific domain
     if "example.com" in request.url:
         print(f"Blocking request to: {request.url}")
-        request.abort()  # 终止该请求
+        request.abort()  # Abort the request
 
-# 使用 Selenium Wire 初始化 WebDriver
+# Initialize the WebDriver with Selenium Wire
 driver = webdriver.Chrome()
 
-# 将拦截器函数分配给 driver
+# Assign the interceptor function to the driver
 driver.request_interceptor = interceptor
 
 try:
-    # 打开一个会产生多次请求的网站
+    # Open a website that makes multiple requests
     driver.get("https://brightdata.com/")
 
-    # 打印所有捕获的请求
+    # Print all captured requests
     for request in driver.requests:
         print(f"URL: {request.url}")
         print(f"Headers: {request.headers}")
         print("-" * 50)
 
 finally:
-    # 关闭浏览器
+    # Close the browser
     driver.quit()
 ```
 
-以上脚本的主要功能：
+此代码片段执行以下操作：
 
-- **定义拦截器函数**：创建一个拦截器函数，该函数会在每个出站请求时被调用，为所有请求添加自定义请求头 `X-Test-Header`，并且阻断请求目标是 `example.com` 的请求。  
-- **捕获请求**：页面加载完毕后，打印所有捕获的请求及其修改后的请求头信息。
+* **拦截器函数**：创建一个拦截器函数，在每个传出请求发出时调用。它使用 `request.headers[]` 为所有传出请求添加自定义标头，并阻止浏览器向 `example.com` 域发送请求。
+* **捕获请求**：页面加载完成后，打印所有捕获的请求，包括修改后的标头。
 
-> **注意**：  
-> 屏蔽不必要的请求（如广告、分析脚本或第三方小组件）能节省带宽并提高爬虫效率。
+> **注意：**\
+> 当页面加载广告、分析脚本或第三方小组件等与你的任务无关的额外资源时，阻止这些请求非常有用。此方法可以提高速度并最大限度减少带宽消耗，从而提升抓取效率。
 
-下面是示例的运行效果截图：
+预期结果应类似如下：
 
-![可以看到添加了 X-Test-Header](https://github.com/bright-cn/selenium-wire-web-scraping/blob/main/Images/image-99-1024x538.png)
+![注意 X-Test-Header](https://github.com/bright-cn/selenium-wire-web-scraping/blob/main/Images/image-99-1024x538.png)
 
 ### WebSocket 监控
 
-很多现代网站使用 [`WebSockets`](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API) 与服务器进行实时通信。与传统的 HTTP 请求不同，`WebSockets` 建立起浏览器和服务器之间的长连接，从而在不需要重复握手的情况下持续交流数据。
+许多现代网站依靠 [`WebSockets`](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API) 与服务器保持实时通信。与传统 HTTP 请求不同，`WebSockets` 会在浏览器与服务器之间建立持续连接，无需反复握手即可实现无缝数据交换。  
 
-由于大量关键数据可能通过这些通道传输，拦截 `WebSocket` 流量能够直接获取实时响应数据，而无需依赖浏览器端的处理或渲染。
+由于关键数据通常会通过这些通道传输，拦截 `WebSocket` 流量可直接访问服务器的实时响应，无需通过浏览器进行处理或渲染。
 
-Selenium Wire 的 `WebSocket` 对象具有以下属性：
+以下是 Selenium Wire `WebSocket` 对象的属性：
 
-| **属性** | **描述** |
+| **属性** | **说明** |
 | --- | --- |
-| `content` | 消息内容，可能是 `str` 或 `bytes` |
-| `date` | 消息发送或接收的时间 |
-| `headers` | 以类字典的形式返回此消息的头部信息（忽略大小写，允许重复） |
-| `from_client` | 布尔值，若为 `True` 表示消息来自客户端，若为 `False` 表示来自服务器 |
+| `content` | 返回消息内容，其类型可以是 `str`，也可以采用 `bytes` 格式。 |
+| `date` | 显示消息的日期和时间。 |
+| `headers` | 返回类似字典的响应标头对象（请注意，Selenium Wire 中的标头不区分大小写，并且允许重复）。 |
+| `from_client` | 这是一个布尔值：消息由客户端发送时返回 `True`，由服务器发送时返回 `False`。 |
 
 ### 管理代理
 
-代理服务器充当你的设备与目标网站之间的中间人，可以隐藏你的真实 IP，突破基于 IP 的访问限制和封锁，同时访问特定地理区域限定的内容。
+代理服务器充当你的设备与目标网站之间的中介，并隐藏你的 IP 地址。它们有助于绕过基于 IP 的限制、减少因速率限制而遭到封禁的情况，并访问受地理位置限制的内容，从而实现顺畅的网页爬虫。
 
-以下是在 Selenium Wire 中配置代理的示例：
+让我们在 Selenium Wire 中配置代理：
 
 ```python
-# 设置 Selenium Wire 的选项
+# Set up Selenium Wire options
 options = {
     "proxy": {
         "http": "<YOUR_HTTP_PROXY_URL>",
@@ -198,60 +198,68 @@ options = {
     }
 }
 
-# 使用 Selenium Wire 初始化 WebDriver
+# Initialize the WebDriver with Selenium Wire
 driver = webdriver.Chrome(seleniumwire_options=options)
 ```
 
-与原生 Selenium 不同的是，你无需使用 Chrome 的 `--proxy-server` 启动标志配置代理，也无需重启浏览器。因为在原生 Selenium 中，代理一旦设置就只能在重启后才能变更。而 Selenium Wire 则可以在同一个浏览器实例中动态更换代理：
+此设置不同于在原版 Selenium 中配置代理，后者需要依赖 Chrome 的 `--proxy-server` 标志。这意味着原版 Selenium 中的代理配置是静态的。设置代理后，它会在整个浏览器会话期间保持生效，且无法在不重启浏览器的情况下修改。此限制可能会带来不便，尤其是在需要动态轮换代理时。
+
+相比之下，Selenium Wire 可以在同一个浏览器实例中动态更改代理。这得益于 `proxy` 属性：
 
 ```python
-# 在浏览器会话中动态切换代理
+# Dynamically change the proxy
 driver.proxy = {
     "http": "<NEW_HTTP_PROXY_URL>",
     "https": "<NEW_HTTPS_PROXY_URL>"
 }
 ```
 
-此外，Chrome 的 `--proxy-server` 标志不支持在 URL 中包含用户名和密码这类带身份验证的代理，而 Selenium Wire 则完全支持。
+此外，Chrome 的 `--proxy-server` 标志不支持 URL 中包含身份验证凭据的代理：
 
-## 在 Selenium Wire 中进行代理轮换
+```
+protocol://username:password@host:port
+```
 
-接下来，让我们构建一个简单的 Selenium Wire 项目来实现代理轮换，让每次请求都能更换出口 IP。
+而 Selenium Wire 完全支持需要身份验证的代理，因此更适合用于网页爬虫。
 
-### 环境要求
+## Selenium Wire 中的代理轮换
 
-在开始之前，确保你具备以下条件：
+让我们创建一个用于代理轮换的 Selenium Wire 项目。这将帮助你在每次请求时更改出口 IP。
 
-- Python 3.7 或更高版本  
-- [受支持的浏览器](https://www.selenium.dev/documentation/webdriver/troubleshooting/errors/driver_location/)
+### 要求
 
-首先，创建并进入一个虚拟环境：
+要完成本指南的这一部分，你需要满足以下前提条件：
+
+* Python 3.7 或更高版本
+* [受支持的网页浏览器](https://www.selenium.dev/documentation/webdriver/troubleshooting/errors/driver_location/)
+
+首先创建一个虚拟环境目录：
 
 ```bash
 python -m venv venv
 ```
 
-Windows 系统下激活命令：
+在 Windows 上运行以下命令来激活它：
 
 ```bash
 venv\Scripts\activate
 ```
 
-macOS / Linux 系统下：
+在 macOS/Linux 上执行：
 
 ```bash
 source venv/bin/activate
 ```
 
-然后安装 Selenium Wire（安装时会自动包含 Selenium 的依赖）：
+现在安装 Selenium Wire（Selenium 将作为其依赖项自动安装）：
 
 ```bash
 pip install selenium-wire
 ```
 
-### 步骤 1：随机选择代理
+### 第 1 步：随机选择代理
 
-首先，需要准备一个可用的代理 URL 列表。你可以使用我们提供的[免费代理列表](https://www.bright.cn/solutions/free-proxies)。将这些代理添加到一个列表中，再用 [`random.choice()`](https://docs.python.org/3/library/random.html#random.choice) 从中随机选择一个：
+首先，你需要一个有效代理 URL 列表。你可以使用我们的[免费代理](https://brightdata.com/solutions/free-proxies)列表。将它们添加到列表中，并使用 [`random.choice()`](https://docs.python.org/3/library/random.html#random.choice) 随机选择其中一个元素：
 
 ```python
 def get_random_proxy():
@@ -262,28 +270,30 @@ def get_random_proxy():
         # ...
     ]
     
-    # 随机返回一个代理
+    # Randomize the list
     return random.choice(proxies)
 ```
 
-代码中需先 `import random`：
+调用后，此函数会从列表中随机返回一个代理 URL。
 
-```python
+要使其正常运行，请不要忘记导入 `random`：
+
+```
 import random
 ```
 
-### 步骤 2：设置代理
+### 第 2 步：设置代理
 
-调用 `get_random_proxy()` 函数获取一个随机代理 URL：
+调用 `get_random_proxy()` 函数获取代理 URL：
 
 ```python
 proxy = get_random_proxy()
 ```
 
-然后使用下列步骤初始化并配置浏览器实例：
+初始化浏览器实例并设置所选代理：
 
 ```python
-# Selenium Wire 配置
+# Selenium Wire configuration with the proxy
 seleniumwire_options = {
     "proxy": {
         "http": proxy,
@@ -291,15 +301,15 @@ seleniumwire_options = {
     }
 }
 
-# 浏览器配置
+# Browser configuration
 chrome_options = Options()
-chrome_options.add_argument("--headless")  # 启用无头模式
+chrome_options.add_argument("--headless")  # Run the browser in headless mode 
 
-# 使用配置初始化浏览器
+# Initialize a browser instance with the given configurations
 driver = webdriver.Chrome(service=Service(), options=chrome_options, seleniumwire_options=seleniumwire_options)
 ```
 
-上述代码需要以下导入：
+上述代码片段需要导入以下内容：
 
 ```python
 from seleniumwire import webdriver
@@ -307,7 +317,7 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 ```
 
-如果想在同一个会话中动态更换代理，可使用：
+要在浏览器会话期间动态更改代理，请改用以下代码：
 
 ```python
 driver.proxy = {
@@ -316,37 +326,37 @@ driver.proxy = {
 }
 ```
 
-### 步骤 3：访问目标页面
+### 第 3 步：访问目标页面
 
-访问目标网站，提取输出，最后关闭浏览器：
+访问目标网站、提取输出并关闭浏览器：
 
 ```python
 try:
-    # 访问目标页面
+    # Visit the target page
     driver.get("https://httpbin.io/ip")
 
-    # 提取页面内容
+    # Extract the page output
     body = driver.find_element(By.TAG_NAME, "body").text
     print(body)
 except Exception as e:
-    # 处理浏览器或代理出错
+    # Handle any errors that occur with the browser or the proxy
     print(f"Error with proxy {proxy}: {e}")
 finally:
-    # 关闭浏览器
+    # Close the browser
     driver.quit()
 ```
 
-其中需导入 `By`：
+要使其正常运行，请从 Selenium 导入 `By`：
 
 ```python
 from selenium.webdriver.common.by import By
 ```
 
-在上述示例中，我们访问了 HTTPBin 项目的 [`/ip`](https://httpbin.io/ip) 端点，该页面会返回调用方的 IP。若脚本运行正常，每次都能打印出代理列表中不同的 IP。
+在此示例中，目标页面是 HTTPBin 项目的 [`/ip`](https://httpbin.io/ip) 端点，该页面会返回调用方的 IP 地址。如果一切正常，脚本每次运行时都应打印代理列表中的不同 IP。
 
-### 步骤 4：整合所有步骤
+### 第 4 步：整合所有代码
 
-以下是完整的代理轮换示例，可保存在 `selenium_wire.py` 文件中：
+以下是应放入 `selenium_wire.py` 文件中的完整 Selenium Wire 代理轮换逻辑：
 
 ```python
 import random
@@ -360,16 +370,16 @@ def get_random_proxy():
         "http://PROXY_1:PORT_NUMBER_X",
         "http://PROXY_2:PORT_NUMBER_Y",
         "http://PROXY_3:PORT_NUMBER_Z",
-        # 添加更多代理...
+        # Add more proxies here...
     ]
     
-    # 随机抽取一个代理
+    # Randomly pick a proxy
     return random.choice(proxies)
  
-# 获取随机代理
+# Pick a random proxy URL 
 proxy = get_random_proxy()
 
-# Selenium Wire 配置
+# Selenium Wire configuration with the proxy
 seleniumwire_options = {
     "proxy": {
         "http": proxy,
@@ -377,32 +387,35 @@ seleniumwire_options = {
     }
 }
 
-# 浏览器初始化
+# Browser configuration
 chrome_options = Options()
-chrome_options.add_argument("--headless")
+chrome_options.add_argument("--headless")  # Run the browser in headless mode 
 
+# Initialize a browser instance with the given configurations
 driver = webdriver.Chrome(service=Service(), options=chrome_options, seleniumwire_options=seleniumwire_options)
 
 try:
-    # 访问目标页面
+    # Visit the target page
     driver.get("https://httpbin.io/ip")
 
-    # 打印页面主体内容
+    # Extract the page output
     body = driver.find_element(By.TAG_NAME, "body").text
     print(body)
 except Exception as e:
+    # Handle any errors that occur with the browser or the proxy
     print(f"Error with proxy {proxy}: {e}")
 finally:
+    # Close the browser
     driver.quit()
 ```
 
-使用以下命令运行脚本：
+要运行该文件，请执行：
 
 ```bash
 python3 selenium_wire.py
 ```
 
-每次执行脚本，输出可能类似于：
+每次运行时，输出应为：
 
 ```json
 {
@@ -410,7 +423,7 @@ python3 selenium_wire.py
 }
 ```
 
-或
+或者：
 
 ```json
 {
@@ -418,55 +431,63 @@ python3 selenium_wire.py
 }
 ```
 
-多次运行该脚本，你就会看到不同的 IP 地址。
+以此类推……
 
-## 使用 Bright Data 代理进行代理轮换
+多次运行脚本，你每次都会看到不同的 IP 地址。
 
-如果不想维护一堆代理 URL，也不想写大量样板代码，可以使用 Bright Data 的旋转代理。它们会自动更换出口 IP。下面介绍如何操作。
+## 更好的代理轮换方法：Bright Data 代理
 
-已有账号的用户可直接登录，没有的话可以免费注册一个。登录后进入以下所示的用户面板：
+在 Selenium Wire 中手动轮换代理涉及大量样板代码，还需要维护有效代理 URL 列表。你可以改用 Bright Data 的动态代理，它们会自动处理 IP 地址变更。以下是使用方法。
 
-![Bright Data 用户面板](https://github.com/bright-cn/selenium-wire-web-scraping/blob/main/Images/image-100-1024x498.png)
+如果你已经有账户，请登录 Bright Data。否则，请免费创建账户。随后你将能够访问以下用户控制面板：
 
-点击“View proxy products”按钮：
+![Bright Data 控制面板](https://github.com/bright-cn/selenium-wire-web-scraping/blob/main/Images/image-100-1024x498.png)
+
+点击“查看代理产品”按钮：
 
 ![查看代理产品](https://github.com/bright-cn/selenium-wire-web-scraping/blob/main/Images/image-101.png)
 
-系统会跳转到“Proxies & Scraping Infrastructure”页面：
+你将被重定向到下方的“代理和抓取基础设施”页面：
 
-![代理与爬虫基础设施](https://github.com/bright-cn/selenium-wire-web-scraping/blob/main/Images/image-102-1024x483.png)
+![配置住宅代理](https://github.com/bright-cn/selenium-wire-web-scraping/blob/main/Images/image-102-1024x483.png)
 
-向下滚动，找到 “[Residential Proxies](https://www.bright.cn/blog/proxy-101/ultimate-guide-to-proxy-types)” 选项卡，并点击“Get started”：
+向下滚动，找到“[住宅代理](https://www.bright.cn/blog/proxy-101/ultimate-guide-to-proxy-types)”卡片，然后点击“开始使用”按钮：
 
-![Residential Proxies](https://github.com/bright-cn/selenium-wire-web-scraping/blob/main/Images/image-103.png)
+![住宅代理](https://github.com/bright-cn/selenium-wire-web-scraping/blob/main/Images/image-103.png)
 
-接下来会来到住宅代理（Residential Proxies）的配置页面，按照引导进行配置：
+你将进入住宅代理配置控制面板。按照引导式向导，根据你的需求设置代理服务。
 
 ![配置住宅代理](https://github.com/bright-cn/selenium-wire-web-scraping/blob/main/Images/image-104.png)
 
-然后转到“Access parameters”选项卡，找到你的代理主机、端口、用户名和密码：
+转到“访问参数”选项卡，按如下方式获取代理的主机、端口、用户名和密码：
 
-![代理访问参数](https://github.com/bright-cn/selenium-wire-web-scraping/blob/main/Images/image-105.png)
+![访问参数](https://github.com/bright-cn/selenium-wire-web-scraping/blob/main/Images/image-105.png)
 
-“Host” 字段通常已经包含了端口信息。
+请注意，“主机”字段已包含端口。
 
-你只需要把以上信息组合成代理 URL，并在 Selenium Wire 中进行设置。假如示例的代理格式如下：
+这些就是构建代理 URL 并在 Selenium Wire 中进行设置所需的全部信息。收集所有信息，并使用以下语法构建 URL：
 
 ```
-brd-customer-hl_4hgu8dwd-zone-residential:[email protected]:XXXXX
+<username>:<password>@<host>
 ```
 
-然后在控制台中启用“Active proxy”即可：
+例如，在本例中应为：
 
-![启用代理](https://github.com/bright-cn/selenium-wire-web-scraping/blob/main/Images/image-106-1024x164.png)
+```
+brd-customer-hl_4hgu8dwd-zone-residential:ZZZZZZZZZZ@brd.superproxy.io:XXXXX
+```
 
-最后，用下面的代码片段，将 Bright Data 的代理集成到 Selenium Wire 中：
+启用“活动代理”，按照最后的说明操作，一切就准备好了！
+
+![活动代理开关](https://github.com/bright-cn/selenium-wire-web-scraping/blob/main/Images/image-106-1024x164.png)
+
+以下是用于集成 Bright Data 的 Selenium Wire 代理代码片段：
 
 ```python
-# Bright Data 代理 URL
-proxy = "brd-customer-hl_4hgu8dwd-zone-residential:[email protected]:XXXXX"
+# Bright Data proxy URL
+proxy = "brd-customer-hl_4hgu8dwd-zone-residential:ZZZZZZZZZZ@brd.superproxy.io:XXXXX"
 
-# 配置 Selenium Wire
+# Set up Selenium Wire options
 options = {
     "proxy": {
         "http": proxy,
@@ -474,24 +495,24 @@ options = {
     }
 }
 
-# 初始化 WebDriver
+# Initialize the WebDriver with Selenium Wire
 driver = webdriver.Chrome(seleniumwire_options=options)
 ```
 
-## Selenium 与 Selenium Wire 在爬虫中的对比
+## 用于网页爬虫时 Selenium 与 Selenium Wire 的对比
 
-下表总结了 Selenium 与 Selenium Wire 的差异：
+总而言之，以下是 Selenium 与 Selenium Wire 的对比：
 
-|  | **Selenium** | **Selenium Wire** |
+|     | **Selenium** | **Selenium Wire** |
 | --- | --- | --- |
-| **定位** | 为测试和网络交互自动化而设计，没有提供底层网络请求的直接访问 | 对 Selenium 进行了扩展，能拦截并修改 HTTP/HTTPS 请求和响应 |
-| **HTTP/HTTPS 请求处理** | 无法直接捕获或修改 HTTP/HTTPS 请求与响应 | 能够拦截、修改、捕获所有网络请求与响应 |
-| **代理支持** | 代理设置有限，需要使用启动参数，且无法动态切换 | 提供高级代理管理，可动态更换，非常适合轮换场景 |
-| **性能** | 相对轻量、速度快 | 因要捕获和处理网络流量导致性能略有下降 |
-| **应用场景** | 主要用于网站功能测试，也可做简单爬虫 | 适用于需要看网络请求详情、调试以及复杂爬虫需求的场合 |
+| **用途** | 自动化网页浏览器，以执行 UI 测试和网页交互 | 扩展 Selenium，为检查和修改 HTTP/HTTPS 请求与响应提供额外功能 |
+| **HTTP/HTTPS 请求处理** | 不提供对 HTTP/HTTPS 请求或响应的直接访问 | 支持检查、修改和捕获 HTTP/HTTPS 请求与响应 |
+| **代理支持** | 代理支持有限（需要手动配置） | 高级代理管理，支持动态设置 |
+| **性能** | 轻量且快速 | 由于需要捕获和处理网络流量，速度略慢 |
+| **使用场景** | 主要用于 Web 应用程序的功能测试，也适用于基础网页爬虫场景 | 适用于 API 测试、网络流量调试和网页爬虫 |
 
-## 结论
+## 总结
 
-虽然 Selenium Wire 在网络爬虫方面十分方便，但由于该项目已不再维护，也并非对所有场景都适用。
+虽然 Selenium Wire 可以高效用于网页爬虫，但它已停止维护，也不是适用于所有场景的通用解决方案。
 
-相较之下，也可以考虑结合原生 Selenium 和专门的云端爬虫浏览器，比如 Bright Data 的 [抓取浏览器](https://www.bright.cn/products/scraping-browser)。它可结合 [Playwright](https://www.bright.cn/products/scraping-browser/playwright)、[Puppeteer](https://www.bright.cn/products/scraping-browser/puppeteer)、[Selenium](https://www.bright.cn/products/scraping-browser/selenium) 等自动化框架使用，不仅能自动切换出口 IP，还能应对浏览器指纹检测、重试、验证码识别等问题，帮你更顺畅地进行大规模爬虫。祝你爬虫工作顺利！
+你可以考虑将原版 Selenium 与专用抓取浏览器结合使用，例如 [Bright Data 的抓取浏览器](https://www.bright.cn/products/scraping-browser)。这是一款可扩展的云浏览器，可与 [Playwright](https://www.bright.cn/products/scraping-browser/playwright)、[Puppeteer](https://www.bright.cn/products/scraping-browser/puppeteer)、[Selenium](https://www.bright.cn/products/scraping-browser/selenium) 等工具配合使用。它能为每个请求无缝轮换出口 IP，同时处理浏览器指纹、重试、验证码破解等任务。立即试用，消除封禁问题并优化你的抓取工作流。
